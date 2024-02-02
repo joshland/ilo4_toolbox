@@ -68,9 +68,9 @@ def extract_one_shot(filename='clear.bin', outdir='outdir'):
 
         if (img_header.flags & 1) == 1:
             output_size = decompress_all(module, os.path.join(outdir, "%s.bin" % stem))
-            print("output_size : 0x%08x\n" % (output_size))
+            print(("output_size : 0x%08x\n" % (output_size)))
 
-            print("[+] extracted %s.bin" % stem)
+            print(("[+] extracted %s.bin" % stem))
 
 
 def ECDH_compute_key(P, d):
@@ -98,7 +98,7 @@ def match_key(hdr_file):
             version_string = hdr_in.read(4).decode()
             print(f"> version string: {version_string}")
 
-            for pattern, ec_pkey in ECPRIVATEKEY_PEM_STORE.items():
+            for pattern, ec_pkey in list(ECPRIVATEKEY_PEM_STORE.items()):
                 if re.match(pattern, version_string):
                     return ec_pkey
 

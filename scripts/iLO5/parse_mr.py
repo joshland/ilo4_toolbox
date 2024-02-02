@@ -35,7 +35,7 @@ def dump_memory_region(ea):
     mask_high = idc.get_wide_dword(ea+0x28)
     name = idc.get_wide_dword(ea+0x30)
     memory_region = ida_bytes.get_strlit_contents(name, -1, idc.STRTYPE_C).decode()
-    print("    id: 0x%04x - flags 0x%x 0x%x - name: %10s - low 0x%08x / high 0x%08x - mask 0x%08x / 0x%08x" % (mem_id, flag1, flag2, memory_region, low, high, mask_low, mask_high))
+    print(("    id: 0x%04x - flags 0x%x 0x%x - name: %10s - low 0x%08x / high 0x%08x - mask 0x%08x / 0x%08x" % (mem_id, flag1, flag2, memory_region, low, high, mask_low, mask_high)))
 
     if memory_region.startswith("MR"):
         idc.set_name(ea, memory_region, idc.SN_PUBLIC)

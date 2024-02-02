@@ -45,7 +45,7 @@ global_offset = 0
 # extract certificates
 
 if not data.startswith(BEGIN_SIGN):
-    print("[-] Bad file format\n    No \"%s\" signature" % BEGIN_SIGN.rstrip())
+    print(("[-] Bad file format\n    No \"%s\" signature" % BEGIN_SIGN.rstrip()))
     sys.exit(1)
 
 off = data.find(END_SIGN) + len(END_SIGN)
@@ -62,7 +62,7 @@ while data.startswith(BEGIN_CERT):
     data = data[off:]
     offsets_map["HP_CERT%d" % cert_num] = global_offset
     global_offset += off
-    print("[+] Extracting certificate %d" % cert_num)
+    print(("[+] Extracting certificate %d" % cert_num))
     with open(outdir + "/cert%d.x509" % cert_num, "wb") as fff:
         fff.write(cert_data)
     cert_num += 1
@@ -153,7 +153,7 @@ with open(outdir + "/bootstrap.bin", "wb") as fff:
 targetListsize = unpack_from("<L", data)[0]
 
 print("\n\n")
-print("[+] iLO target list: %x element(s)" % (targetListsize))
+print(("[+] iLO target list: %x element(s)" % (targetListsize)))
 
 data = data[4:]
 global_offset += 4
@@ -165,8 +165,8 @@ for i in range(targetListsize):
     if id in TARGETS:
         dev = TARGETS[id]
 
-    print("    target 0x%x (%s)" % (i, dev))
-    print(hexdump(raw))
+    print(("    target 0x%x (%s)" % (i, dev)))
+    print((hexdump(raw)))
     data = data[0x10:]
     global_offset += 0x10
 
@@ -180,14 +180,14 @@ ilo_num = 0
 
 while True:
     print("\n-------------------------------------------------------------------------------")
-    print("[+] iLO Header %d" % (ilo_num))
+    print(("[+] iLO Header %d" % (ilo_num)))
 
     ilo_header = data[:IMG_HDR_SIZE]
     data = data[IMG_HDR_SIZE:]
 
     print(IMG_LIST)
     print(ilo_num)
-    print(IMG_LIST[ilo_num])
+    print((IMG_LIST[ilo_num]))
 
 
     with open(outdir + "/%s.hdr" % IMG_LIST[ilo_num], "wb") as fff:
@@ -216,9 +216,9 @@ while True:
 
     if (img_header.flags & 1) == 1:
         output_size = decompress_all(module, outdir + "/%s.bin" % IMG_LIST[ilo_num])
-        print("output_size : 0x%08x\n" % (output_size))
+        print(("output_size : 0x%08x\n" % (output_size)))
 
-        print("[+] Extracted %s.bin" % IMG_LIST[ilo_num])
+        print(("[+] Extracted %s.bin" % IMG_LIST[ilo_num]))
 
     # skip padding bytes
     data = data[img_header.compressed_size:]
@@ -238,18 +238,18 @@ while True:
 
 
 print("\n-------------------------------------------------------------------------------")
-print("[+] Modules summary (%d)" % (ilo_num+1))
+print(("[+] Modules summary (%d)" % (ilo_num+1)))
 
 for i, mod in enumerate(mod_list):
-    print("    %2x) %30s, type 0x%02x, size 0x%08x, crc 0x%08x" % (i, mod.module.decode(), mod.type, mod.decompressed_size, mod.img_crc))
+    print(("    %2x) %30s, type 0x%02x, size 0x%08x, crc 0x%08x" % (i, mod.module.decode(), mod.type, mod.decompressed_size, mod.img_crc)))
 
 
 #------------------------------------------------------------------------------
 # output offsets map
 
 print("\n[+] Firmware offset map")
-for part, offset in offsets_map.items():
-    print("  > %30s at 0x%08x" % (part, offset))
+for part, offset in list(offsets_map.items()):
+    print(("  > %30s at 0x%08x" % (part, offset)))
 
 with open(outdir + "/firmware.map", "wb") as fff:
     fff.write(json.dumps(offsets_map, sort_keys=True, indent=4, separators=(',', ': ')).encode())

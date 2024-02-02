@@ -64,17 +64,17 @@ def hexdump(src, length=16):
 
 def check_header_crc(hdr, img):
     crc = (zlib.crc32(hdr[:0x58] + hdr[0x60:0x100]) & 0xffffffff)
-    print("\n[+] header crc ok: 0x%08x" % crc)
+    print(("\n[+] header crc ok: 0x%08x" % crc))
     if crc != img.header_crc:
-        print("[x] failed to check header crc: 0x%08x" % img.header_crc)
+        print(("[x] failed to check header crc: 0x%08x" % img.header_crc))
         sys.exit()
 
 
 def check_img_crc(mod, img):
     crc = (zlib.crc32(mod) & 0xffffffff)
-    print("[+] image crc ok : 0x%08x\n" % crc)
+    print(("[+] image crc ok : 0x%08x\n" % crc))
     if crc != img.img_crc:
-        print("[x] failed to check image crc: 0x%08x" % img.img_crc)
+        print(("[x] failed to check image crc: 0x%08x" % img.img_crc))
     return crc
 
 
@@ -104,29 +104,29 @@ class HpImageHeader(LittleEndianStructure):
         return bytearray(byte_array).decode()
 
     def dump(self):
-        print("  > img_magic          : %s" % self.to_str(self.img_magic))
-        print("  > version major      : 0x%x" % self.major)
-        print("  > version minor      : 0x%x" % self.minor)
-        print("  > field_A            : 0x%02x" % self.field_A)
+        print(("  > img_magic          : %s" % self.to_str(self.img_magic)))
+        print(("  > version major      : 0x%x" % self.major))
+        print(("  > version minor      : 0x%x" % self.minor))
+        print(("  > field_A            : 0x%02x" % self.field_A))
 
         dev = ""
         id = uuid.UUID(bytearray(self.device_id).hex())
         if id in DEVICES:
             dev = DEVICES[id]
 
-        print("  > device id          : %s" % dev)
-        print(hexdump(bytearray(self.device_id)))
-        print("  > field_1C            : 0x%x" % self.field_1C)
-        print("  > field_20            : 0x%x" % self.field_20)
-        print("  > field_24            : 0x%x" % self.field_24)
-        print("  > field_28            : 0x%x" % self.field_28)
-        print("  > field_2C            : 0x%x" % self.field_2C)
-        print("  > field_30            : 0x%x" % self.field_30)
-        print("  > field_34            : 0x%x" % self.field_34)
-        print("  > field_38            : 0x%x" % self.field_38)
-        print("  > field_3C            : 0x%x" % self.field_3C)
-        print("  > version             : %s" % self.to_str(self.version))
-        print("  > name                : %s" % self.to_str(self.name))
+        print(("  > device id          : %s" % dev))
+        print((hexdump(bytearray(self.device_id))))
+        print(("  > field_1C            : 0x%x" % self.field_1C))
+        print(("  > field_20            : 0x%x" % self.field_20))
+        print(("  > field_24            : 0x%x" % self.field_24))
+        print(("  > field_28            : 0x%x" % self.field_28))
+        print(("  > field_2C            : 0x%x" % self.field_2C))
+        print(("  > field_30            : 0x%x" % self.field_30))
+        print(("  > field_34            : 0x%x" % self.field_34))
+        print(("  > field_38            : 0x%x" % self.field_38))
+        print(("  > field_3C            : 0x%x" % self.field_3C))
+        print(("  > version             : %s" % self.to_str(self.version)))
+        print(("  > name                : %s" % self.to_str(self.name)))
         print("  > gap")
 
 
@@ -170,37 +170,37 @@ class ImageHeader(LittleEndianStructure):
         return bytearray(byte_array).decode()
 
     def dump(self):
-        print("  > module                  : %s" % self.to_str(self.module))
-        print("  > fw_magic                : 0x%x" % self.fw_magic)
-        print("  > header_type             : 0x%x" % self.header_type)
-        print("  > field_28                : 0x%x" % self.field_28)
-        print("  > type                    : 0x%x" % self.type)
-        print("  > flags                   : 0x%x" % self.flags)
-        print("  > field_30                : 0x%x" % self.field_30)
-        print("  > field_34                : 0x%x" % self.field_34)
-        print("  > field_38                : 0x%x" % self.field_38)
-        print("  > backward_crc_offset     : 0x%x" % self.backward_crc_offset)
-        print("  > forward_crc_offset      : 0x%x" % self.forward_crc_offset)
-        print("  > img_crc                 : 0x%x" % self.img_crc)
-        print("  > compressed_size         : 0x%x" % self.compressed_size)
-        print("  > decompressed_size       : 0x%x" % self.decompressed_size)
-        print("  > field_50                : 0x%x" % self.field_50)
-        print("  > field_54                : 0x%x" % self.field_54)
-        print("  > crypto_params_index     : 0x%x" % self.crypto_params_index)
-        print("  > crypto_params_index 2   : 0x%x" % self.crypto_params_index2)
-        print("  > header_crc              : 0x%x" % self.header_crc)
-        print("  > field_60                : 0x%x" % self.field_60)
-        print("  > field_64                : 0x%x" % self.field_64)
-        print("  > field_68                : 0x%x" % self.field_68)
-        print("  > field_6C                : 0x%x" % self.field_6C)
-        print("  > field_70                : 0x%x" % self.field_70)
-        print("  > field_74                : 0x%x" % self.field_74)
-        print("  > field_78                : 0x%x" % self.field_78)
-        print("  > field_7C                : 0x%x" % self.field_7C)
-        print("  > copyright               : %s" % self.to_str(self.copyright))
+        print(("  > module                  : %s" % self.to_str(self.module)))
+        print(("  > fw_magic                : 0x%x" % self.fw_magic))
+        print(("  > header_type             : 0x%x" % self.header_type))
+        print(("  > field_28                : 0x%x" % self.field_28))
+        print(("  > type                    : 0x%x" % self.type))
+        print(("  > flags                   : 0x%x" % self.flags))
+        print(("  > field_30                : 0x%x" % self.field_30))
+        print(("  > field_34                : 0x%x" % self.field_34))
+        print(("  > field_38                : 0x%x" % self.field_38))
+        print(("  > backward_crc_offset     : 0x%x" % self.backward_crc_offset))
+        print(("  > forward_crc_offset      : 0x%x" % self.forward_crc_offset))
+        print(("  > img_crc                 : 0x%x" % self.img_crc))
+        print(("  > compressed_size         : 0x%x" % self.compressed_size))
+        print(("  > decompressed_size       : 0x%x" % self.decompressed_size))
+        print(("  > field_50                : 0x%x" % self.field_50))
+        print(("  > field_54                : 0x%x" % self.field_54))
+        print(("  > crypto_params_index     : 0x%x" % self.crypto_params_index))
+        print(("  > crypto_params_index 2   : 0x%x" % self.crypto_params_index2))
+        print(("  > header_crc              : 0x%x" % self.header_crc))
+        print(("  > field_60                : 0x%x" % self.field_60))
+        print(("  > field_64                : 0x%x" % self.field_64))
+        print(("  > field_68                : 0x%x" % self.field_68))
+        print(("  > field_6C                : 0x%x" % self.field_6C))
+        print(("  > field_70                : 0x%x" % self.field_70))
+        print(("  > field_74                : 0x%x" % self.field_74))
+        print(("  > field_78                : 0x%x" % self.field_78))
+        print(("  > field_7C                : 0x%x" % self.field_7C))
+        print(("  > copyright               : %s" % self.to_str(self.copyright)))
         print("  > signature")
-        print(hexdump(self.signature))
-        print("  > fw_magic_end       : 0x%x" % self.fw_magic_end)
+        print((hexdump(self.signature)))
+        print(("  > fw_magic_end       : 0x%x" % self.fw_magic_end))
 
 
 # decompress extracted images
