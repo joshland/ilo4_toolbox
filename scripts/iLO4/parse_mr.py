@@ -10,7 +10,7 @@ def dump_memory_region(ea):
     intv = idc.Dword(ea+0x14)
     name = idc.Dword(ea+0x20)
     memory_region = idc.GetString(name, -1, idc.ASCSTR_C)
-    print "    flags: 0x%04x - int 0x%x- reg: %10s - low 0x%08x / high 0x%08x" % (id, intv, memory_region, low, high)
+    print("    flags: 0x%04x - int 0x%x- reg: %10s - low 0x%08x / high 0x%08x" % (id, intv, memory_region, low, high))
 
     if memory_region.startswith("MR"):
         idc.set_name(ea, memory_region, idc.SN_PUBLIC)
@@ -22,7 +22,7 @@ START_ADDR = 0x200BCA00
 ea = START_ADDR
 mod_base = START_ADDR
 
-print "> parsing memory region entries:\n"
+print("> parsing memory region entries:\n")
 
 while True:
     idc.MakeDword(ea)
@@ -34,4 +34,4 @@ while True:
     dump_memory_region(struct_addr)
     ea += 4
 
-print "[+] job done captain!"
+print("[+] job done captain!")

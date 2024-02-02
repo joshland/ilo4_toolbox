@@ -23,12 +23,12 @@ def write_mem(addr, data):
 stub = open("stub","r").read()
 if args.key is None:
     key = read_mem(0x674A, 32)
-    print("Key found in memory: " + key.encode("hex"))
+    print(("Key found in memory: " + key.encode("hex")))
 else:
     key = args.key.decode("hex")
     write_mem(0x674A, key)
 while True:
-    ans = raw_input("Do you want to patch the memory? [Y/n] ")
+    ans = input("Do you want to patch the memory? [Y/n] ")
     if ans == "n":
         print("Abort!")
         sys.exit(2)

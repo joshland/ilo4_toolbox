@@ -12,18 +12,18 @@ def asm_sc(sc):
     try:
         v = ks.asm(sc)
     except KsError as e:
-        print """========================================================
+        print("""========================================================
 == ERRORERRORERRORERRORERRORERRORERRORERRORERRORERROR ==
-========================================================"""
-        print e.message
-        print "Keystone error", e.get_asm_count()
+========================================================""")
+        print(e.message)
+        print("Keystone error", e.get_asm_count())
         return ''
     return ''.join(chr(x) for x in v[0])
 
 def disasm_sc(sc):
     cs = Cs(CS_ARCH_ARM, CS_MODE_ARM)
     for i in cs.disasm(sc, 0):
-	print("0x%x:\t%s\t%s" %(i.address, i.mnemonic, i.op_str))
+	print(("0x%x:\t%s\t%s" %(i.address, i.mnemonic, i.op_str)))
 
 with open("GET_handler.S", "rb") as f:
     handler_code = asm_sc(f.read())
@@ -64,7 +64,7 @@ PATCH7 = {"offset": 0x3A6D4, "size": 1, "prev_data": "00", "patch": "09", "decod
 PATCHES.append(PATCH7)
 
 if len(sys.argv) < 2:
-    print "usage: %s <elf.bin>" % sys.argv[0]
+    print("usage: %s <elf.bin>" % sys.argv[0])
     sys.exit(1)
 
 with open(sys.argv[1], "rb") as f:
@@ -81,7 +81,7 @@ for patch in PATCHES:
         else:
             prev_data = patch["prev_data"].decode("hex")
         if check_data != prev_data:
-            print "[-] Error, bad file content at offset %x" % patch["offset"]
+            print("[-] Error, bad file content at offset %x" % patch["offset"])
             sys.exit(1)
 
     if patch["decode"] is None:
@@ -99,4 +99,4 @@ elf_data = elf_data[:webserver_offset] + data + elf_data[webserver_offset+webser
 with open(sys.argv[1] + ".patched", "wb") as f:
     f.write(elf_data)
 
-print "[+] Patch applied to %s.patched" % sys.argv[1]
+print("[+] Patch applied to %s.patched" % sys.argv[1])

